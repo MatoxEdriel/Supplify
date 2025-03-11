@@ -1,0 +1,1 @@
+Plataforma que gestiona la interacción entre proveedores y tiendas, centralizando la administración de productos, promociones y pedidos. Facilita la creación de APIs para gestionar el inventario, actualizaciones de promociones, y el procesamiento de pedidos, optimizando la comunicación y operaciones.
