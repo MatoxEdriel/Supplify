@@ -41,50 +41,6 @@ declare type SurfacesType = {
     standalone: true,
     imports: [CommonModule, FormsModule, SelectButtonModule],
     template: `
-        <div class="flex flex-col gap-4">
-            <div>
-                <span class="text-sm text-muted-color font-semibold">Primary</span>
-                <div class="pt-2 flex gap-2 flex-wrap justify-start">
-                    @for (primaryColor of primaryColors(); track primaryColor.name) {
-                        <button
-                            type="button"
-                            [title]="primaryColor.name"
-                            (click)="updateColors($event, 'primary', primaryColor)"
-                            [ngClass]="{ 'outline-primary': primaryColor.name === selectedPrimaryColor() }"
-                            class="border-none w-5 h-5 rounded-full p-0 cursor-pointer outline-none outline-offset-1"
-                            [style]="{
-                                'background-color': primaryColor?.name === 'noir' ? 'var(--text-color)' : primaryColor?.palette?.['500']
-                            }"
-                        ></button>
-                    }
-                </div>
-            </div>
-            <div>
-                <span class="text-sm text-muted-color font-semibold">Surface</span>
-                <div class="pt-2 flex gap-2 flex-wrap justify-start">
-                    @for (surface of surfaces; track surface.name) {
-                        <button
-                            type="button"
-                            [title]="surface.name"
-                            (click)="updateColors($event, 'surface', surface)"
-                            [ngClass]="{ 'outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'slate' }"
-                            class="border-none w-5 h-5 rounded-full p-0 cursor-pointer outline-none outline-offset-1"
-                            [style]="{
-                                'background-color': surface?.name === 'noir' ? 'var(--text-color)' : surface?.palette?.['500']
-                            }"
-                        ></button>
-                    }
-                </div>
-            </div>
-            <div class="flex flex-col gap-2">
-                <span class="text-sm text-muted-color font-semibold">Presets</span>
-                <p-selectbutton [options]="presets" [ngModel]="selectedPreset()" (ngModelChange)="onPresetChange($event)" [allowEmpty]="false" size="small" />
-            </div>
-            <div *ngIf="showMenuModeButton()" class="flex flex-col gap-2">
-                <span class="text-sm text-muted-color font-semibold">Menu Mode</span>
-                <p-selectbutton [ngModel]="menuMode()" (ngModelChange)="onMenuModeChange($event)" [options]="menuModeOptions" [allowEmpty]="false" size="small" />
-            </div>
-        </div>
     `,
     host: {
         class: 'hidden absolute top-[3.25rem] right-0 w-72 p-4 bg-surface-0 dark:bg-surface-900 border border-surface rounded-border origin-top shadow-[0px_3px_5px_rgba(0,0,0,0.02),0px_0px_2px_rgba(0,0,0,0.05),0px_1px_4px_rgba(0,0,0,0.08)]'
@@ -104,11 +60,6 @@ export class AppConfigurator {
     presets = Object.keys(presets);
 
     showMenuModeButton = signal(!this.router.url.includes('auth'));
-
-    menuModeOptions = [
-        { label: 'Static', value: 'static' },
-        { label: 'Overlay', value: 'overlay' }
-    ];
 
     ngOnInit() {
         if (isPlatformBrowser(this.platformId)) {
@@ -256,27 +207,36 @@ export class AppConfigurator {
     ];
 
     selectedPrimaryColor = computed(() => {
-        return this.layoutService.layoutConfig().primary;
+        return 'blue';
     });
 
-    selectedSurfaceColor = computed(() => this.layoutService.layoutConfig().surface);
+    selectedSurfaceColor = computed(() => {return 'blue'} );
 
-    selectedPreset = computed(() => this.layoutService.layoutConfig().preset);
+    selectedPreset = computed(() => {return 'blue'});
 
     menuMode = computed(() => this.layoutService.layoutConfig().menuMode);
 
     primaryColors = computed<SurfacesType[]>(() => {
-        const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
-        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-        const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
+        const colors = 'blue'
+        const palettes: SurfacesType[] = [{
+            name: colors,
+            palette: {
+                50: `#E3F2FD`, // Colores específicos para la paleta del color
+                100: `#BBDEFB`,
+                200: `#90CAF9`,
+                300: `#64B5F6`,
+                400: `#42A5F5`,
+                500: `#2196F3`, // Color principal
+                600: `#1E88E5`,
+                700: `#1976D2`,
+                800: `#1565C0`,
+                900: `#0D47A1`
 
-        colors.forEach((color) => {
-            palettes.push({
-                name: color,
-                palette: presetPalette?.[color as KeyOfType<typeof presetPalette>] as SurfacesType['palette']
-            });
-        });
+            }
 
+         }];
+
+  
         return palettes;
     });
 
@@ -409,17 +369,7 @@ export class AppConfigurator {
         }
     }
 
-    updateColors(event: any, type: string, color: any) {
-        if (type === 'primary') {
-            this.layoutService.layoutConfig.update((state) => ({ ...state, primary: color.name }));
-        } else if (type === 'surface') {
-            this.layoutService.layoutConfig.update((state) => ({ ...state, surface: color.name }));
-        }
-        this.applyTheme(type, color);
-
-        event.stopPropagation();
-    }
-
+ 
     applyTheme(type: string, color: any) {
         if (type === 'primary') {
             updatePreset(this.getPresetExt());
