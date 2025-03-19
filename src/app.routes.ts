@@ -4,8 +4,21 @@ import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { Login } from './app/pages/auth/login';
 
 export const appRoutes: Routes = [
+    
+    {
+        path: '',
+        redirectTo: '/auth/login', 
+        pathMatch: 'full'  
+    },
+    {
+        path: 'auth',  
+        children: [
+            { path: 'login', component: Login } 
+        ]
+    },
     {
         path: '',
         component: AppLayout,
